@@ -62,6 +62,7 @@ public class ClientController {
 		log.info("Buscando dados da conta do usuário ID: {}", currentUser.getId());
 		
 		// Retorna o usuário completo já carregado, evitando query duplicada
+		log.info("Dador da conta: {}", currentUser.toString());
 		return ResponseEntity.ok(currentUser);
 	}
 

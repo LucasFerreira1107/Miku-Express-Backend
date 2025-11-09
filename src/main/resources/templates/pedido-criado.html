@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f4f4f4;">
+        <tr>
+            <td align="center">
+                <table width="600" border="0" cellspacing="0" cellpadding="20" style="background-color: #ffffff; margin-top: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <tr>
+                        <td align="center" style="border-bottom: 2px solid #eee;">
+                            <img th:src="|cid:${logoCid}|" alt="Miku Express Logo" style="max-width: 150px;">
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="padding: 30px 20px;">
+                            <h1 style="color: #333; font-size: 24px;">Pedido Confirmado!</h1>
+                            <p style="color: #555; font-size: 16px; line-height: 1.6;">
+                                Olá, <strong th:text="${nomeCliente}">Nome do Cliente</strong>!
+                            </p>
+                            <p style="color: #555; font-size: 16px; line-height: 1.6;">
+                                Seu pedido no Miku Express foi criado com sucesso. Estamos preparando tudo para o envio.
+                            </p>
+                            
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 20px; margin-bottom: 20px;">
+                                <tr>
+                                    <td align="center" style="background-color: #f9f9f9; padding: 20px; border-radius: 8px;">
+                                        <p style="color: #555; font-size: 16px; margin: 0;">Seu código de rastreio é:</p>
+                                        <h2 style="color: #0056b3; font-size: 28px; margin: 10px 0; letter-spacing: 2px;" th:text="${codigoRastreio}">MIKU123456BR</h2>
+                                        <p style="color: #555; font-size: 16px; margin: 0;">Status atual: <strong th:text="${statusInicial}">Pedido criado!</strong></p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td align="center">
+                                        <a 
+                                           style="background-color: #007bff; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px; display: inline-block;">
+                                            Acompanhar meu Pedido
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="padding: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
+                            <p>© 2025 Miku Express. Todos os direitos reservados.</p>
+                            <p>Este é um e-mail automático. Por favor, não responda.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -98,6 +98,42 @@ public class AdminController {
 	}
 	
 	/**
+	 * Retorna todos os administradores cadastrados no sistema.
+	 * 
+	 * @return ResponseEntity com status 200 (OK) e a lista de administradores
+	 */
+	@GetMapping("/users")
+	public ResponseEntity<List<UserAdmin>> getAllAdmins() {
+		return ResponseEntity.ok(userAdminService.getAllAdmins());
+	}
+	
+	/**
+	 * Atualiza os dados de um administrador específico pelo ID.
+	 * 
+	 * @param adminId ID do administrador a ser atualizado
+	 * @param dto DTO com os dados a serem atualizados
+	 * @return ResponseEntity com o administrador atualizado
+	 */
+	@PatchMapping("/users/{id}")
+	public ResponseEntity<UserAdmin> updateAdminById(
+			@PathVariable("id") Long adminId,
+			@RequestBody UpdateUserAdminDTO dto) {
+		return ResponseEntity.ok(userAdminService.uptadeUserAdmin(dto, adminId));
+	}
+	
+	/**
+	 * Remove um administrador do sistema pelo ID.
+	 * 
+	 * @param adminId ID do administrador a ser removido
+	 * @return ResponseEntity com status 204 em caso de sucesso
+	 */
+	@DeleteMapping("/users/{id}")
+	public ResponseEntity<Void> deleteAdminById(@PathVariable("id") Long adminId) {
+		userAdminService.deleteUserAdmin(adminId);
+		return ResponseEntity.noContent().build();
+	}
+	
+	/**
 	 * Retorna todos os pedidos cadastrados no sistema.
 	 * 
 	 * Este endpoint permite que administradores visualizem todos os pedidos,

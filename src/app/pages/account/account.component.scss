@@ -1,0 +1,14 @@
+.account-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.8rem;
+  border-radius: 14px;
+  background: rgba(244, 67, 54, 0.08);
+  color: #d32f2f;
+
+  button {
+    align-self: flex-start;
+  }
+}

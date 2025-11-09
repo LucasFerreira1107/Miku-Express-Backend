@@ -1,5 +1,6 @@
 package com.mikuexpress.mikuexpress.service;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +25,15 @@ public class UserAdminServcice {
     private final UserGenericRepository userGenericRepository; 
     private final PasswordEncoder passwordEncoder;
     private final UserAdminMapper userAdminMapper;
+	
+	/**
+	 * Retorna todos os administradores cadastrados no sistema.
+	 * 
+	 * @return lista de administradores
+	 */
+	public List<UserAdmin> getAllAdmins() {
+		return userAdminRepository.findAll();
+	}
 	
 	/**
 	 * Cria um novo usuário administrador no sistema.

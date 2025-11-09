@@ -1,12 +1,17 @@
 package com.mikuexpress.mikuexpress.service;
 
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import com.mikuexpress.mikuexpress.entity.Order;
 import com.mikuexpress.mikuexpress.entity.StatusUpdate;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,6 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 public class EmailService {
 
 	private final JavaMailSender mailSender;
+	private final SpringTemplateEngine templateEngine;
+	
+	private static final String LOGO_CID = "logoMikuExpress";
+    private static final String LOGO_PATH = "imagens/logo.png";
 	
 	/**
 	 * Envia e-mail de notificação ao cliente quando um pedido é criado.
@@ -30,24 +39,28 @@ public class EmailService {
 	 */
 	public void sendEmailCreate(Order order) {
 		try {
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setTo(order.getCustomerEmail());
-			message.setSubject("Miku Express: Pedido Criado!");
+			
+			//Contexto do Thymeleaf
+			Context context = new Context();
+			context.setVariable("nomeCliente", order.getCustomerName());
+			context.setVariable("codigoRastreio", order.getTrackingCode());
+			context.setVariable("logoCid", LOGO_CID);
 			
 			String statusTexto = "Pedido criado!";
+
 			if (order.getStatusUpdates() != null 
 					&& !order.getStatusUpdates().isEmpty() 
 					&& order.getStatusUpdates().get(0) != null) {
 				statusTexto = order.getStatusUpdates().get(0).getStatus();
 			}
+			context.setVariable("statusInicial", statusTexto);;
+
+			//Processar o template HTML
+			String htmlContent = templateEngine.process("pedido-criado", context);
 			
-			message.setText("Olá, " + order.getCustomerName() + "!\n\n" 
-					+ "Seu pedido foi criado com sucesso. \n"
-					+ "Código de Rastreio: " + order.getTrackingCode()
-					+ "\n"
-					+ "Status atual: " + statusTexto);
+			//Enviar Email
+			sendHtmlEmail(order.getCustomerEmail(), "Miku Express: Pedido Criado!", htmlContent, LOGO_PATH, LOGO_CID);
 			
-			mailSender.send(message);
 			log.info("E-mail de criação de pedido enviado para {}", order.getCustomerEmail());
 		} catch (Exception e) {
 			log.error("Erro ao enviar e-mail de criação para {}", order.getCustomerEmail(), e);
@@ -55,6 +68,22 @@ public class EmailService {
 		}
 	}
 	
+	private void sendHtmlEmail(String to, String subject, 
+			String htmlContent, String resourcePath, String resourceCid) throws MessagingException{
+		//MimeMessage para envio do html
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,true,"UTF-8");
+		
+		helper.setTo(to);
+		helper.setSubject(subject);
+		helper.setText(htmlContent, true);
+		
+		//Anexa a imagem
+		ClassPathResource resource = new ClassPathResource(resourcePath);
+		helper.addInline(resourceCid, resource);
+		mailSender.send(mimeMessage);
+	}
+
 	/**
 	 * Envia e-mail de notificação ao cliente quando há uma atualização de status no pedido.
 	 * 
@@ -70,20 +99,21 @@ public class EmailService {
 	 */
 	public void sendEmailUpdate(Order order, StatusUpdate statusUpdate) {
 		try {
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setTo(order.getCustomerEmail());
-			message.setSubject("Miku Express: Atualização do Pedido " + order.getTrackingCode());
 			
-			String source = statusUpdate.getSource() != null ? statusUpdate.getSource() : "Não informada";
-			String destination = statusUpdate.getDestination() != null ? statusUpdate.getDestination() : "Não informada";
+			Context context = new Context();
+			context.setVariable("nomeCliente", order.getCustomerName());
+			context.setVariable("codigoRastreio", order.getTrackingCode());
+			context.setVariable("novoStatus", statusUpdate.getStatus());
+			context.setVariable("origem", statusUpdate.getSource());
+			context.setVariable("destino", statusUpdate.getDestination());
 			
-			message.setText("Olá, " + order.getCustomerName() + "!\n\n" +
-					"Seu pedido teve uma nova atualização:\n" +
-					"Status: " + statusUpdate.getStatus() + "\n" +
-					"Origem: " + source + "\n"+
-					"Destino: "+ destination);
+			context.setVariable("logoCid", LOGO_CID);
 			
-			mailSender.send(message);
+			String htmlContent = templateEngine.process("atualizacao-status", context);
+			
+			sendHtmlEmail(order.getCustomerEmail(), "Miku Express: Atualização do Pedido " + order.getTrackingCode()
+			, htmlContent,LOGO_PATH, LOGO_CID);
+			
 			log.info("E-mail de atualização enviado para {}", order.getCustomerEmail());
 		} catch (Exception e) {
 			log.error("Erro ao enviar e-mail de atualização para {}", order.getCustomerEmail(), e);

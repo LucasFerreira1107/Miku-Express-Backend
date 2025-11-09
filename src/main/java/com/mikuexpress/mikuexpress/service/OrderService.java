@@ -94,6 +94,7 @@ public class OrderService {
 		StatusUpdate initStatus = new StatusUpdate();
 		initStatus.setStatus("Pedido criado!");
 		initStatus.setSource(source.getAddressForGoogle());
+		initStatus.setDestination(destination.getAddressForGoogle());
 		initStatus.setDateUpdate(LocalDateTime.now());
 		initStatus.setOrder(newOrder);
 		
